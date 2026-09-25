@@ -43,7 +43,11 @@ jobs:
           DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
           DEPLOY_PORT: ${{ vars.DEPLOY_PORT || '2222' }}
           DEPLOY_USER: ${{ vars.DEPLOY_USER || 'jack' }}
+          KAKAO_REST_KEY: ${{ secrets.KAKAO_REST_KEY }}
         run: |
+          test -n "$KAKAO_REST_KEY"
+          printf 'KAKAO_REST_KEY=%s\n' "$KAKAO_REST_KEY" | ssh -i ~/.ssh/home-deploy -o BatchMode=yes -o IdentitiesOnly=yes -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
+            'mkdir -p ~/apps/muckzi; umask 077; cat > ~/apps/muckzi/backend.env'
           git archive HEAD | ssh -i ~/.ssh/home-deploy -o BatchMode=yes -o IdentitiesOnly=yes -p "$DEPLOY_PORT" "$DEPLOY_USER@$DEPLOY_HOST" \
             'set -e; cd ~/apps/muckzi; rm -rf backend; mkdir backend; tar -x -C backend; backend/deploy.sh'
 
