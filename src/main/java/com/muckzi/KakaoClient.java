@@ -15,7 +15,7 @@ public class KakaoClient {
 
     record Docs(List<Doc> documents) {}
 
-    record Image(String image_url, String thumbnail_url) {}
+    record Image(String image_url, String thumbnail_url, int width, int height) {}
 
     record Images(List<Image> documents) {}
 
@@ -40,17 +40,15 @@ public class KakaoClient {
                 .retrieve().body(Docs.class).documents();
     }
 
-    /** 사진은 없어도 추천은 보여줘야 하므로 실패하면 null */
+    /** 사진은 없어도 추천은 보여줘야 하므로 실패하면 null, 블로그 이모티콘 같은 작은 이미지는 건너뛴다 */
     public String image(String query) {
         try {
-            List<Image> found = http.get().uri(u -> u.path("/v2/search/image")
-                            .queryParam("query", query).queryParam("size", 1).build())
-                    .retrieve().body(Images.class).documents();
-            if (found.isEmpty()) {
-                return null;
-            }
-            Image img = found.get(0);
-            return img.image_url().startsWith("https://") ? img.image_url() : img.thumbnail_url();
+            return http.get().uri(u -> u.path("/v2/search/image")
+                            .queryParam("query", query).queryParam("size", 10).build())
+                    .retrieve().body(Images.class).documents().stream()
+                    .filter(img -> img.width() >= 300 && img.height() >= 200 && !img.image_url().contains("storep-phinf"))
+                    .map(img -> img.image_url().startsWith("https://") ? img.image_url() : img.thumbnail_url())
+                    .findFirst().orElse(null);
         } catch (RestClientException e) {
             return null;
         }
