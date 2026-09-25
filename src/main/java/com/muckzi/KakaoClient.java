@@ -81,6 +81,13 @@ public class KakaoClient {
                 .retrieve().body(Docs.class).documents();
     }
 
+    public List<Doc> places(String query, double lat, double lng) {
+        return http.get().uri(u -> u.path("/v2/local/search/keyword.json")
+                        .queryParam("query", query).queryParam("x", lng).queryParam("y", lat)
+                        .queryParam("size", 10).build())
+                .retrieve().body(Docs.class).documents();
+    }
+
     /** 사진은 없어도 추천은 보여줘야 하므로 실패하면 null, 블로그 이모티콘 같은 작은 이미지는 건너뛴다 */
     public String image(String query) {
         try {
