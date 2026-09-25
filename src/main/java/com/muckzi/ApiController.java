@@ -52,8 +52,8 @@ public class ApiController {
                 .map(m -> Map.entry(m, kakao.restaurants(m.keyword(), lat, lng, r)))
                 .toList()
                 .forEach(e -> found.put(e.getKey(), e.getValue()));
-        List<Ranking.Place> places = Ranking.rank(found, r, 12).parallelStream()
-                .map(p -> p.withImage(kakao.image(p.name() + " " + district(p.address()))))
+        List<Ranking.Place> places = Ranking.verify(Ranking.rank(found, r, 30), kakao::panel, 12).parallelStream()
+                .map(p -> p.image() != null ? p : p.withImage(kakao.image(p.name() + " " + district(p.address()))))
                 .toList();
         return new Result(places, menus.reason());
     }
