@@ -28,6 +28,12 @@ public class AiClient {
         return http.post().uri("/parse").body(Map.of("text", text)).retrieve().body(Tags.class).tags();
     }
 
+    public record Feedback(String query, String keyword, String menu, String place_id, boolean liked) {}
+
+    public void feedback(Feedback body) {
+        http.post().uri("/feedback").body(body).retrieve().toBodilessEntity();
+    }
+
     public Menus menus(String text, int limit) {
         return http.post().uri("/recommend").body(Map.of("text", text, "limit", limit)).retrieve().body(Menus.class);
     }

@@ -37,6 +37,12 @@ public class ApiController {
         return ai.tags(clip(in.text()));
     }
 
+    @PostMapping("/feedback")
+    public Map<String, Boolean> feedback(@RequestBody AiClient.Feedback body) {
+        ai.feedback(body);
+        return Map.of("ok", true);
+    }
+
     @GetMapping("/region")
     public Map<String, String> region(@RequestParam double lat, @RequestParam double lng) {
         return Map.of("name", kakao.region(lat, lng));

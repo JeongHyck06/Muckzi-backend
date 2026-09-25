@@ -14,12 +14,12 @@ public final class Ranking {
     public record Dish(String name, Integer price) {}
 
     public record Place(String id, String name, String category, String address, String phone, int distance,
-                        double lat, double lng, String url, String image, String menu, String labels, int match,
-                        Dish dish, List<Dish> dishes, String hours, String today, Boolean open) {
+                        double lat, double lng, String url, String image, String keyword, String menu, String labels,
+                        int match, Dish dish, List<Dish> dishes, String hours, String today, Boolean open) {
 
         Place withImage(String image) {
-            return new Place(id, name, category, address, phone, distance, lat, lng, url, image, menu, labels, match,
-                    dish, dishes, hours, today, open);
+            return new Place(id, name, category, address, phone, distance, lat, lng, url, image, keyword, menu, labels,
+                    match, dish, dishes, hours, today, open);
         }
     }
 
@@ -82,7 +82,7 @@ public final class Ranking {
         String address = d.road_address_name().isEmpty() ? d.address_name() : d.road_address_name();
         return new Place(d.id(), d.place_name(), category, address, d.phone(), c.distance(),
                 Double.parseDouble(d.y()), Double.parseDouble(d.x()), d.place_url(),
-                panel == null ? null : panel.photo(), c.menu().name(), c.menu().labels(), c.match(),
+                panel == null ? null : panel.photo(), c.menu().keyword(), c.menu().name(), c.menu().labels(), c.match(),
                 dish, dishes, panel == null ? null : panel.hours(), panel == null ? null : panel.today(),
                 panel == null ? null : panel.open());
     }
