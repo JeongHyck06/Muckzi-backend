@@ -43,6 +43,20 @@ public class ApiController {
         return Map.of("ok", true);
     }
 
+    record Spot(String name, String address, double lat, double lng) {}
+
+    @GetMapping("/search")
+    public List<Spot> search(@RequestParam String q, @RequestParam double lat, @RequestParam double lng) {
+        String query = clip(q);
+        if (query.isEmpty()) {
+            return List.of();
+        }
+        return kakao.places(query, lat, lng).stream()
+                .map(d -> new Spot(d.place_name(), d.road_address_name().isEmpty() ? d.address_name() : d.road_address_name(),
+                        Double.parseDouble(d.y()), Double.parseDouble(d.x())))
+                .toList();
+    }
+
     @GetMapping("/region")
     public Map<String, String> region(@RequestParam double lat, @RequestParam double lng) {
         return Map.of("name", kakao.region(lat, lng));
